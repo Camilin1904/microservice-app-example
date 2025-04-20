@@ -1,27 +1,22 @@
 trigger:
   paths:
     include:
-      - log-message-processor/**
+      - auth-api/**
 
 pool:
   vmImage: 'ubuntu-latest'
 
 variables:
-  imageName: 'log-message-processor'
+  imageName: 'auth-api'
   acrLoginServer: 'mytodosacr.azurecr.io'
   dockerRegistryServiceConnection: 'acr-connection' # Docker Registry SC name
-  azureWebAppName: 'log-message-processor'          # Azure Web App name
-  azureSubscription: 'PipelineConnection'           # ARM SC name
-
-  # Application-specific environment variables
-  REDIS_HOST: 'redisTODO.redis.cache.windows.net'
-  REDIS_PORT: '6380'
-  REDIS_CHANNEL: 'log_channel'
-  #ZIPKIN_URL: ''
+  azureWebAppName: 'TODO-AUTH-API'                 # Azure Web App name
+  azureSubscription: 'PipelineConnection'        # ARM SC name
+  USERS_API_ADDRESS: https://users-api-fqf5b6eycxc5fzdf.eastus-01.azurewebsites.net
 
 stages:
   - stage: BuildAndPush
-    displayName: Build and Push Docker Image
+    displayName: Build and Push Docker Image  
     jobs:
       - job: Docker
         steps:
@@ -31,8 +26,8 @@ stages:
               containerRegistry: $(dockerRegistryServiceConnection)
               repository: $(imageName)
               command: buildAndPush
-              Dockerfile: log-message-processor/Dockerfile
-              buildContext: log-message-processor
+              Dockerfile: auth-api/Dockerfile
+              buildContext: auth-api
               tags: |
                 $(Build.BuildId)
 
@@ -47,11 +42,7 @@ stages:
             inputs:
               azureSubscription: $(azureSubscription)
               appName: $(azureWebAppName)
+              envVars: |
+                USERS_API_ADDRESS=$(USERS_API_ADDRESS)
               containers: |
                 $(acrLoginServer)/$(imageName):$(Build.BuildId)
-              containerCommand: ""  # uses CMD from Dockerfile
-              envVars: |
-                REDIS_HOST=$(REDIS_HOST)
-                REDIS_PORT=$(REDIS_PORT)
-                REDIS_CHANNEL=$(REDIS_CHANNEL)
-                ZIPKIN_URL=$(ZIPKIN_URL)

@@ -1,17 +1,23 @@
 trigger:
   paths:
     include:
-      - frontend/**
+      - log-message-processor/**
 
 pool:
   vmImage: 'ubuntu-latest'
 
 variables:
-  imageName: 'frontend'
+  imageName: 'log-message-processor'
   acrLoginServer: 'mytodosacr.azurecr.io'
   dockerRegistryServiceConnection: 'acr-connection' # Docker Registry SC name
-  azureWebAppName: 'TODO-frontend'                 # Azure Web App name
-  azureSubscription: 'PipelineConnection'        # ARM SC name
+  azureWebAppName: 'log-message-processor'          # Azure Web App name
+  azureSubscription: 'PipelineConnection'           # ARM SC name
+
+  # Application-specific environment variables
+  REDIS_HOST: 'redisTODO.redis.cache.windows.net'
+  REDIS_PORT: '6380'
+  REDIS_CHANNEL: 'log_channel'
+  #ZIPKIN_URL: ''
 
 stages:
   - stage: BuildAndPush
@@ -25,8 +31,8 @@ stages:
               containerRegistry: $(dockerRegistryServiceConnection)
               repository: $(imageName)
               command: buildAndPush
-              Dockerfile: frontend/Dockerfile
-              buildContext: frontend
+              Dockerfile: log-message-processor/Dockerfile
+              buildContext: log-message-processor
               tags: |
                 $(Build.BuildId)
 
@@ -43,3 +49,9 @@ stages:
               appName: $(azureWebAppName)
               containers: |
                 $(acrLoginServer)/$(imageName):$(Build.BuildId)
+              containerCommand: ""  # uses CMD from Dockerfile
+              envVars: |
+                REDIS_HOST=$(REDIS_HOST)
+                REDIS_PORT=$(REDIS_PORT)
+                REDIS_CHANNEL=$(REDIS_CHANNEL)
+              #ZIPKIN_URL=$(ZIPKIN_URL)
