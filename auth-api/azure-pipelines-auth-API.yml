@@ -22,6 +22,11 @@ stages:
   - stage: BuildAndPush
     displayName: Build and Push Docker Image  
     jobs:
+      - checkout: self
+        displayName: Checkout Master Branch
+        inputs:
+          ref: refs/heads/master
+          
       - job: Docker
         steps:
           - task: Docker@2
