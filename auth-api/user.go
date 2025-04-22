@@ -56,29 +56,36 @@ func (h *UserService) getUser(ctx context.Context, username string) (User, error
 		return user, err
 	}
 	url := fmt.Sprintf("%s/users/%s", h.UserAPIAddress, username)
-	req, _ := http.NewRequest("GET", url, nil)
-	req.Header.Add("Authorization", "Bearer "+token)
 
-	req = req.WithContext(ctx)
+	err = retry(3,2*time.second, func() error {
+		req, _ := http.NewRequest("GET", url, nil)
+		req.Header.Add("Authorization", "Bearer "+token)
 
-	resp, err := h.Client.Do(req)
-	if err != nil {
+		req = req.WithContext(ctx)
+
+		resp, err := h.Client.Do(req)
+		if err != nil {
+			return user, err
+		}
+
+		defer resp.Body.Close()
+		bodyBytes, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			return user, err
+		}
+
+		if resp.StatusCode < 200 || resp.StatusCode >= 300 {
+			return user, fmt.Errorf("could not get user data: %s", string(bodyBytes))
+		}
+
+		err = json.Unmarshal(bodyBytes, &user)
+
 		return user, err
-	}
 
-	defer resp.Body.Close()
-	bodyBytes, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return user, err
-	}
 
-	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
-		return user, fmt.Errorf("could not get user data: %s", string(bodyBytes))
-	}
+	})
 
-	err = json.Unmarshal(bodyBytes, &user)
-
-	return user, err
+	
 }
 
 func (h *UserService) getUserAPIToken(username string) (string, error) {
@@ -87,4 +94,19 @@ func (h *UserService) getUserAPIToken(username string) (string, error) {
 	claims["username"] = username
 	claims["scope"] = "read"
 	return token.SignedString([]byte(jwtSecret))
+}
+
+func retry(attemps int, sleep time.Duration, fn func() error) error {
+	var err error
+
+	for i := 0; i<attemps; i++ {
+		err = fn()
+		if err == nil {
+			return nil
+		}
+		time.Sleep(sleep)
+
+	}
+
+	return err
 }

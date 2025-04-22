@@ -60,6 +60,24 @@ class TodoController {
                 todoId: todoId,
             }))
         })
+
+        const attempPublish = (retriesLeft = 3) => {
+            this._redisClient.publish(this._logChannel, message, (err, reply) => {
+
+                if (err) {
+                    if (retriesLeft > 0) {
+                        console.warn(`Redis publish failed. Retrying... (${3 - retriesLeft + 1})`);
+                        setTimeout(() => attemptPublish(retriesLeft - 1), 500); 
+                    }else {
+                        console.error('Failed to publish message after retries', err)
+                    }
+                } else {
+                    console.log('Message published successfully', reply)
+                }
+            });
+        };
+
+        attempPublish(); 
     }
 
     _getTodoData (userID) {
