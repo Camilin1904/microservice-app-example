@@ -24,7 +24,7 @@ COPY . .
 # Download dependencies
 RUN go mod tidy
 
-# Build the application
+# Build the application :(
 RUN go build -o auth-api
 
 # Final stage
