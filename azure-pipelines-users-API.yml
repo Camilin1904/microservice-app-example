@@ -1,4 +1,7 @@
 trigger:
+  branch:
+      include:
+        - master
   paths:
     include:
       - users-api/**
