@@ -43,11 +43,7 @@ stages:
               buildContext: frontend
               tags: |
                 $(Build.BuildId)
-              envVars:
-                AUTH_API_ADDRESS: $(AUTH_API_ADDRESS)
-                TODOS_API_ADDRESS: $(TODOS_API_ADDRESS)
-                ZIPKIN_URL: $(ZIPKIN_URL)
-
+              
   - stage: Deploy
     displayName: Deploy to Azure Web App
     dependsOn: BuildAndPush
@@ -59,5 +55,9 @@ stages:
             inputs:
               azureSubscription: $(azureSubscription)
               appName: $(azureWebAppName)
+              envVars:
+                AUTH_API_ADDRESS: $(AUTH_API_ADDRESS)
+                TODOS_API_ADDRESS: $(TODOS_API_ADDRESS)
+                ZIPKIN_URL: $(ZIPKIN_URL)
               containers: |
                 $(acrLoginServer)/$(imageName):$(Build.BuildId)
