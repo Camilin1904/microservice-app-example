@@ -25,13 +25,10 @@ COPY . .
 RUN go mod tidy
 
 # Build the application
-RUN go build -o auth-api .
+RUN go build -o auth-api
 
-# Runtime stage
-FROM alpine:3.16
-
-# Install necessary runtime dependencies
-RUN apk --no-cache add ca-certificates
+# Final stage
+FROM alpine:latest
 
 # Set working directory
 WORKDIR /root/
