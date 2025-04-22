@@ -12,8 +12,9 @@ variables:
   dockerRegistryServiceConnection: 'acr-connection' # Docker Registry SC name
   azureWebAppName: 'TODO-frontend'                 # Azure Web App name
   azureSubscription: 'PipelineConnection'        # ARM SC name
-  AUTH_API_ADDRESS:https://todo-auth-api-h7c6cjghc6ena3da.eastus-01.azurewebsites.net
-  TODOS_API_ADDRESS:https://todos-api-a9apeufvaggbfjda.eastus-01.azurewebsites.net
+  AUTH_API_ADDRESS: https://todo-auth-api-h7c6cjghc6ena3da.eastus-01.azurewebsites.net
+  TODOS_API_ADDRESS: https://todos-api-a9apeufvaggbfjda.eastus-01.azurewebsites.net
+  ZIPKIN_URL: https://todo-zipkin-gqbcbmezgcbddwat.eastus-01.azurewebsites.net
 
 stages:
   - stage: BuildAndPush
@@ -34,6 +35,7 @@ stages:
               envVars:
                 AUTH_API_ADDRESS: $(AUTH_API_ADDRESS)
                 TODOS_API_ADDRESS: $(TODOS_API_ADDRESS)
+                ZIPKIN_URL: $(ZIPKIN_URL)
 
   - stage: Deploy
     displayName: Deploy to Azure Web App

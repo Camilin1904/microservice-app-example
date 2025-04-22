@@ -17,7 +17,7 @@ variables:
   REDIS_HOST: 'redisTODO.redis.cache.windows.net'
   REDIS_PORT: '6380'
   REDIS_CHANNEL: 'log_channel'
-  #ZIPKIN_URL: ''
+  ZIPKIN_URL: https://todo-zipkin-gqbcbmezgcbddwat.eastus-01.azurewebsites.net
 
 stages:
   - stage: BuildAndPush
@@ -54,4 +54,4 @@ stages:
                 REDIS_HOST=$(REDIS_HOST)
                 REDIS_PORT=$(REDIS_PORT)
                 REDIS_CHANNEL=$(REDIS_CHANNEL)
-              #ZIPKIN_URL=$(ZIPKIN_URL)
+                ZIPKIN_URL=$(ZIPKIN_URL)

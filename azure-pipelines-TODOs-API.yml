@@ -16,6 +16,7 @@ variables:
   REDIS_HOST: redisTODO.redis.cache.windows.net 
   REDIS_PORT: 6380 
   REDIS_CHANNEL: log_channel
+  ZIPKIN_URL: https://todo-zipkin-gqbcbmezgcbddwat.eastus-01.azurewebsites.net
 
 stages:
   - stage: BuildAndPush
@@ -35,8 +36,10 @@ stages:
                 $(Build.BuildId)
               envVars: |
                 JWT_SECRET=$(JWT_SECRET)
-                AUTH_API_PORT=$(AUTH_API_PORT)
-                USERS_API_ADDRESS=$(USERS_API_ADDRESS)
+                ZIPKIN_URL=$(ZIPKIN_URL)
+                REDIS_HOST=$(REDIS_HOST)
+                REDIS_PORT=$(REDIS_PORT)
+                REDIS_CHANNEL=$(REDIS_CHANNEL)
 
   - stage: Deploy
     displayName: Deploy to Azure Web App

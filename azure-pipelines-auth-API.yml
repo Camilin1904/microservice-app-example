@@ -13,6 +13,7 @@ variables:
   azureWebAppName: 'TODO-AUTH-API'                 # Azure Web App name
   azureSubscription: 'PipelineConnection'        # ARM SC name
   USERS_API_ADDRESS: https://users-api-fqf5b6eycxc5fzdf.eastus-01.azurewebsites.net
+  ZIPKIN_URL: https://todo-zipkin-gqbcbmezgcbddwat.eastus-01.azurewebsites.net
 
 stages:
   - stage: BuildAndPush
@@ -44,5 +45,6 @@ stages:
               appName: $(azureWebAppName)
               envVars: |
                 USERS_API_ADDRESS=$(USERS_API_ADDRESS)
+                ZIPKIN_URL=$(ZIPKIN_URL)
               containers: |
                 $(acrLoginServer)/$(imageName):$(Build.BuildId)

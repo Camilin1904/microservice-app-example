@@ -12,6 +12,7 @@ variables:
   dockerRegistryServiceConnection: 'acr-connection' # Docker Registry SC name
   azureWebAppName: 'USERS-API'                 # Azure Web App name
   azureSubscription: 'PipelineConnection'        # ARM SC name
+  ZIPKIN_URL: https://todo-zipkin-gqbcbmezgcbddwat.eastus-01.azurewebsites.net
 
 stages:
   - stage: BuildAndPush
@@ -41,5 +42,7 @@ stages:
             inputs:
               azureSubscription: $(azureSubscription)
               appName: $(azureWebAppName)
+              envVars: |
+                ZIPKIN_URL=$(ZIPKIN_URL)
               containers: |
                 $(acrLoginServer)/$(imageName):$(Build.BuildId)
