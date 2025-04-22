@@ -32,7 +32,9 @@ stages:
             persistCredentials: true
             clean: true
             fetchDepth: 0
-            ref: refs/heads/master
+
+          - script: git checkout master
+            displayName: Switch to master branch  
               
           - task: Docker@2
             displayName: Build and push image to ACR

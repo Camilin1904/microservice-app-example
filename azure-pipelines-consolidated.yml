@@ -18,7 +18,9 @@ stages:
             persistCredentials: true
             clean: true
             fetchDepth: 0
-            ref: refs/heads/master
+
+          - script: git checkout master
+            displayName: Switch to master branch
 
           - task: Docker@2
             displayName: Build and push TODOs API image to ACR
@@ -46,7 +48,9 @@ stages:
             persistCredentials: true
             clean: true
             fetchDepth: 0
-            ref: refs/heads/master          
+
+          - script: git checkout master
+            displayName: Switch to master branch     
           
           - task: Docker@2
             displayName: Build and push Auth API image to ACR
@@ -71,7 +75,9 @@ stages:
             persistCredentials: true
             clean: true
             fetchDepth: 0
-            ref: refs/heads/master
+
+          - script: git checkout master
+            displayName: Switch to master branch  
 
           - task: Docker@2
             displayName: Build and push Frontend image to ACR
@@ -97,7 +103,9 @@ stages:
             persistCredentials: true
             clean: true
             fetchDepth: 0
-            ref: refs/heads/master
+
+          - script: git checkout master
+            displayName: Switch to master branch  
 
           - task: Docker@2
             displayName: Build and push Log Message Processor image to ACR
@@ -124,8 +132,10 @@ stages:
             persistCredentials: true
             clean: true
             fetchDepth: 0
-            ref: refs/heads/master
-            
+
+          - script: git checkout master
+            displayName: Switch to master branch  
+
           - task: Docker@2
             displayName: Build and push Users API image to ACR
             inputs:
