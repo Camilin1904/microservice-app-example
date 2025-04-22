@@ -24,9 +24,11 @@ stages:
       - job: Docker
         steps:
           - checkout: self
-            displayName: Checkout Master Branch
-            inputs:
-              ref: refs/heads/master
+            persistCredentials: true
+            clean: true
+            fetchDepth: 0
+            ref: refs/heads/master
+            
           - task: Docker@2
             displayName: Build and push image to ACR
             inputs:

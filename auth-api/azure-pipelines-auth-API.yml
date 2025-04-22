@@ -23,9 +23,10 @@ stages:
     displayName: Build and Push Docker Image  
     jobs:
       - checkout: self
-        displayName: Checkout Master Branch
-        inputs:
-          ref: refs/heads/master
+        persistCredentials: true
+        clean: true
+        fetchDepth: 0
+        ref: refs/heads/master
           
       - job: Docker
         steps:
