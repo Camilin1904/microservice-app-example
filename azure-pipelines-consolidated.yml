@@ -1,0 +1,187 @@
+trigger:
+  schedule:
+    - cron: "0 0 1 1 *"  # Trigger annually on January 1st
+      displayName: Annual Trigger
+      branches:
+        include:
+          - master
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+  acrLoginServer: 'mytodosacr.azurecr.io'
+  dockerRegistryServiceConnection: 'acr-connection' # Docker Registry SC name
+  azureSubscription: 'PipelineConnection'            # ARM SC name
+  ZIPKIN_URL: https://todo-zipkin-gqbcbmezgcbddwat.eastus-01.azurewebsites.net
+
+stages:
+  - stage: BuildAndPushTodosAPI
+    displayName: Build and Push TODOs API Docker Image
+    jobs:
+      - job: Docker
+        steps:
+          - task: Docker@2
+            displayName: Build and push TODOs API image to ACR
+            inputs:
+              containerRegistry: $(dockerRegistryServiceConnection)
+              repository: 'todos-api'
+              command: buildAndPush
+              Dockerfile: todos-api/Dockerfile
+              buildContext: todos-api
+              tags: |
+                $(Build.BuildId)
+              envVars: |
+                JWT_SECRET=PRFT
+                REDIS_HOST=redisTODO.redis.cache.windows.net
+                REDIS_PORT=6380
+                REDIS_CHANNEL=log_channel
+                ZIPKIN_URL=$(ZIPKIN_URL)
+
+  - stage: BuildAndPushAuthAPI
+    displayName: Build and Push Auth API Docker Image
+    jobs:
+      - job: Docker
+        steps:
+          - task: Docker@2
+            displayName: Build and push Auth API image to ACR
+            inputs:
+              containerRegistry: $(dockerRegistryServiceConnection)
+              repository: 'auth-api'
+              command: buildAndPush
+              Dockerfile: auth-api/Dockerfile
+              buildContext: auth-api
+              tags: |
+                $(Build.BuildId)
+              envVars: |
+                USERS_API_ADDRESS=https://users-api-fqf5b6eycxc5fzdf.eastus-01.azurewebsites.net
+                ZIPKIN_URL=$(ZIPKIN_URL)
+
+  - stage: BuildAndPushFrontend
+    displayName: Build and Push Frontend Docker Image
+    jobs:
+      - job: Docker
+        steps:
+          - task: Docker@2
+            displayName: Build and push Frontend image to ACR
+            inputs:
+              containerRegistry: $(dockerRegistryServiceConnection)
+              repository: 'frontend'
+              command: buildAndPush
+              Dockerfile: frontend/Dockerfile
+              buildContext: frontend
+              tags: |
+                $(Build.BuildId)
+              envVars: |
+                AUTH_API_ADDRESS=https://todo-auth-api-h7c6cjghc6ena3da.eastus-01.azurewebsites.net
+                TODOS_API_ADDRESS=https://todos-api-a9apeufvaggbfjda.eastus-01.azurewebsites.net
+                ZIPKIN_URL=$(ZIPKIN_URL)
+
+  - stage: BuildAndPushLogMessageProcessor
+    displayName: Build and Push Log Message Processor Docker Image
+    jobs:
+      - job: Docker
+        steps:
+          - task: Docker@2
+            displayName: Build and push Log Message Processor image to ACR
+            inputs:
+              containerRegistry: $(dockerRegistryServiceConnection)
+              repository: 'log-message-processor'
+              command: buildAndPush
+              Dockerfile: log-message-processor/Dockerfile
+              buildContext: log-message-processor
+              tags: |
+                $(Build.BuildId)
+              envVars: |
+                REDIS_HOST=redisTODO.redis.cache.windows.net
+                REDIS_PORT=6380
+                REDIS_CHANNEL=log_channel
+                ZIPKIN_URL=$(ZIPKIN_URL)
+
+  - stage: BuildAndPushUsersAPI
+    displayName: Build and Push Users API Docker Image
+    jobs:
+      - job: Docker
+        steps:
+          - task: Docker@2
+            displayName: Build and push Users API image to ACR
+            inputs:
+              containerRegistry: $(dockerRegistryServiceConnection)
+              repository: 'users-api'
+              command: buildAndPush
+              Dockerfile: users-api/Dockerfile
+              buildContext: users-api
+              tags: |
+                $(Build.BuildId)
+              envVars: |
+                ZIPKIN_URL=$(ZIPKIN_URL)
+
+  - stage: DeployTodosAPI
+    displayName: Deploy TODOs API to Azure Web App
+    dependsOn: BuildAndPushTodosAPI
+    jobs:
+      - job: DeployWebApp
+        steps:
+          - task: AzureWebAppContainer@1
+            displayName: Deploy TODOs API image to Azure Web App
+            inputs:
+              azureSubscription: $(azureSubscription)
+              appName: 'TODOs-API'
+              containers: |
+                $(acrLoginServer)/todos-api:$(Build.BuildId)
+
+  - stage: DeployAuthAPI
+    displayName: Deploy Auth API to Azure Web App
+    dependsOn: BuildAndPushAuthAPI
+    jobs:
+      - job: DeployWebApp
+        steps:
+          - task: AzureWebAppContainer@1
+            displayName: Deploy Auth API image to Azure Web App
+            inputs:
+              azureSubscription: $(azureSubscription)
+              appName: 'TODO-AUTH-API'
+              containers: |
+                $(acrLoginServer)/auth-api:$(Build.BuildId)
+
+  - stage: DeployFrontend
+    displayName: Deploy Frontend to Azure Web App
+    dependsOn: BuildAndPushFrontend
+    jobs:
+      - job: DeployWebApp
+        steps:
+          - task: AzureWebAppContainer@1
+            displayName: Deploy Frontend image to Azure Web App
+            inputs:
+              azureSubscription: $(azureSubscription)
+              appName: 'TODO-frontend'
+              containers: |
+                $(acrLoginServer)/frontend:$(Build.BuildId)
+
+  - stage: DeployLogMessageProcessor
+    displayName: Deploy Log Message Processor to Azure Web App
+    dependsOn: BuildAndPushLogMessageProcessor
+    jobs:
+      - job: DeployWebApp
+        steps:
+          - task: AzureWebAppContainer@1
+            displayName: Deploy Log Message Processor image to Azure Web App
+            inputs:
+              azureSubscription: $(azureSubscription)
+              appName: 'log-message-processor'
+              containers: |
+                $(acrLoginServer)/log-message-processor:$(Build.BuildId)
+
+  - stage: DeployUsersAPI
+    displayName: Deploy Users API to Azure Web App
+    dependsOn: BuildAndPushUsersAPI
+    jobs:
+      - job: DeployWebApp
+        steps:
+          - task: AzureWebAppContainer@1
+            displayName: Deploy Users API image to Azure Web App
+            inputs:
+              azureSubscription: $(azureSubscription)
+              appName: 'USERS-API'
+              containers: |
+                $(acrLoginServer)/users-api:$(Build.BuildId)
