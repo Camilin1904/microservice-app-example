@@ -1,5 +1,5 @@
 trigger:
-  branch:
+  branches:
       include:
         - master
   paths:
@@ -55,9 +55,9 @@ stages:
             inputs:
               azureSubscription: $(azureSubscription)
               appName: $(azureWebAppName)
-              envVars:
-                AUTH_API_ADDRESS: $(AUTH_API_ADDRESS)
-                TODOS_API_ADDRESS: $(TODOS_API_ADDRESS)
-                ZIPKIN_URL: $(ZIPKIN_URL)
+              envVars: |
+                AUTH_API_ADDRESS=$(AUTH_API_ADDRESS)
+                TODOS_API_ADDRESS=$(TODOS_API_ADDRESS)
+                ZIPKIN_URL=$(ZIPKIN_URL)
               containers: |
                 $(acrLoginServer)/$(imageName):$(Build.BuildId)
