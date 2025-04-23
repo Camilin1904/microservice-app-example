@@ -40,12 +40,20 @@ stages:
               repository: $(imageName)
               command: buildAndPush
               Dockerfile: auth-api/Dockerfile
-              buildContext: auth-api
-              arguments: |
-                --build-arg USERS_API_ADDRESS=$(USERS_API_ADDRESS)
-                --build-arg ZIPKIN_URL=$(ZIPKIN_URL)
+              buildContext: auth-api                
               tags: |
                 $(Build.BuildId)
+
+          - task: AzureAppServiceSettings@1
+            displayName: 'Set environment variables for Web App'
+            inputs:
+              azureSubscription: $(azureSubscription)
+              appName: $(azureWebAppName)
+              appSettings: |
+                USERS_API_ADDRESS=$(USERS_API_ADDRESS)
+                ZIPKIN_URL=$(ZIPKIN_URL)
+
+  
 
   - stage: Deploy
     displayName: Deploy to Azure Web App
