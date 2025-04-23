@@ -41,12 +41,17 @@ stages:
               command: buildAndPush
               Dockerfile: frontend/Dockerfile
               buildContext: frontend
-              arguments: |
-                --build-arg AUTH_API_ADDRESS=$(AUTH_API_ADDRESS)
-                --build-arg TODOS_API_ADDRESS=$(TODOS_API_ADDRESS)
-                --build-arg ZIPKIN_URL=$(ZIPKIN_URL)
               tags: |
                 $(Build.BuildId)
+          - task: AzureAppServiceSettings@1
+            displayName: 'Set environment variables for Web App'
+            inputs:
+              azureSubscription: $(azureSubscription)
+              appName: $(azureWebAppName)
+              appSettings: |
+                AUTH_API_ADDRESS=$(AUTH_API_ADDRESS)
+                TODOS_API_ADDRESS=$(TODOS_API_ADDRESS)
+                ZIPKIN_URL=$(ZIPKIN_URL)
               
   - stage: Deploy
     displayName: Deploy to Azure Web App
