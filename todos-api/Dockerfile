@@ -14,11 +14,16 @@ RUN npm install
 COPY . .
 
 # Set environment variables with default values
+ARG ZIPKIN_URL
+ARG REDIS_HOST
+ARG REDIS_PORT
+ARG REDIS_CHANNEL
 ENV TODO_API_PORT=8082 \
     JWT_SECRET=PRFT \
-    REDIS_HOST=redis \
-    REDIS_PORT=6379 \
-    REDIS_CHANNEL=log_channel
+    REDIS_HOST=$REDIS_HOST \
+    REDIS_PORT=$REDIS_PORT \
+    REDIS_CHANNEL=$REDIS_CHANNEL \
+    ZIPKIN_URL=$ZIPKIN_URL
 
 # Expose API port
 EXPOSE 8082

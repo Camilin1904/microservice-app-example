@@ -39,6 +39,8 @@ stages:
               command: buildAndPush
               Dockerfile: users-api/Dockerfile
               buildContext: users-api
+              arguments: |
+                --build-arg ZIPKIN_URL=$(ZIPKIN_URL)
               tags: |
                 $(Build.BuildId)
 

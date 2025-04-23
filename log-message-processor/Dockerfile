@@ -26,10 +26,14 @@ RUN pip3 install --no-cache-dir -r requirements.txt
 COPY main.py .
 
 # Set default environment variables
-ENV REDIS_HOST=redis \
-    REDIS_PORT=6379 \
-    REDIS_CHANNEL=log_channel \
-    ZIPKIN_URL=""
+ARG ZIPKIN_URL
+ARG REDIS_HOST
+ARG REDIS_PORT
+ARG REDIS_CHANNEL
+ENV REDIS_HOST=$REDIS_HOST \
+    REDIS_PORT=$REDIS_PORT \
+    REDIS_CHANNEL=$REDIS_CHANNEL \
+    ZIPKIN_URL=$ZIPKIN_URL \
 
 # Command to run the application
 CMD ["python3", "main.py"]
