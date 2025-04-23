@@ -50,8 +50,16 @@ stages:
               azureSubscription: $(azureSubscription)
               appName: $(azureWebAppName)
               appSettings: |
-                USERS_API_ADDRESS=$(USERS_API_ADDRESS)
-                ZIPKIN_URL=$(ZIPKIN_URL)
+                [
+                  {
+                    "name":"USERS_API_ADDRESS",
+                    "value":"$(USERS_API_ADDRESS)"
+                  }
+                  {
+                    "name":"ZIPKIN_URL",
+                    "value":"$(ZIPKIN_URL)"
+                  }
+                ]
 
   
 
