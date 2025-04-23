@@ -49,9 +49,20 @@ stages:
               azureSubscription: $(azureSubscription)
               appName: $(azureWebAppName)
               appSettings: |
-                AUTH_API_ADDRESS=$(AUTH_API_ADDRESS)
-                TODOS_API_ADDRESS=$(TODOS_API_ADDRESS)
-                ZIPKIN_URL=$(ZIPKIN_URL)
+                [
+                  {
+                    "name":"TODOS_API_ADDRESS",
+                    "value":"$(AUTH_API_ADDRESS)"
+                  },
+                  {
+                    "name":"AUTH_API_ADDRESS",
+                    "value":"$(TODOS_API_ADDRESS)"
+                  },
+                  {
+                    "name":"ZIPKIN_URL",
+                    "value":"$(ZIPKIN_URL)"
+                  }
+                ]
               
   - stage: Deploy
     displayName: Deploy to Azure Web App
