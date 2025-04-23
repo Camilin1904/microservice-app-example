@@ -1,0 +1,45 @@
+trigger:
+  paths:
+    include:
+      - zipkin/**
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+  imageName: 'zipkin'
+  acrLoginServer: 'mytodosacr.azurecr.io'
+  dockerRegistryServiceConnection: 'acr-connection' # Docker Registry SC name
+  azureWebAppName: 'TODO-zipkin'                 # Azure Web App name
+  azureSubscription: 'PipelineConnection'        # ARM SC name
+
+stages:
+  - stage: BuildAndPush
+    displayName: Build and Push Docker Image  
+    jobs:
+      - job: Docker
+        steps:
+          - task: Docker@2
+            displayName: Build and push image to ACR
+            inputs:
+              containerRegistry: $(dockerRegistryServiceConnection)
+              repository: $(imageName)
+              command: buildAndPush
+              Dockerfile: auth-api/Dockerfile
+              buildContext: auth-api
+              tags: |
+                $(Build.BuildId)
+
+  - stage: Deploy
+    displayName: Deploy to Azure Web App
+    dependsOn: BuildAndPush
+    jobs:
+      - job: DeployWebApp
+        steps:
+          - task: AzureWebAppContainer@1
+            displayName: Deploy image to Azure Web App
+            inputs:
+              azureSubscription: $(azureSubscription)
+              appName: $(azureWebAppName)
+              containers: |
+                $(acrLoginServer)/$(imageName):$(Build.BuildId)
