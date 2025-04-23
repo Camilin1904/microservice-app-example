@@ -17,7 +17,7 @@ variables:
   azureSubscription: 'PipelineConnection'        # ARM SC name
   AUTH_API_ADDRESS: https://todo-auth-api-h7c6cjghc6ena3da.eastus-01.azurewebsites.net
   TODOS_API_ADDRESS: https://todos-api-a9apeufvaggbfjda.eastus-01.azurewebsites.net
-  ZIPKIN_URL: https://todo-zipkin-gqbcbmezgcbddwat.eastus-01.azurewebsites.net
+  ZIPKIN_URL: https://todo-zipkin-gqbcbmezgcbddwat.eastus-01.azurewebsites.net/api/v2/spans
 
 stages:
   - stage: BuildAndPush
