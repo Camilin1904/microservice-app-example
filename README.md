@@ -1,17 +1,49 @@
-# Microservice App - PRFT Devops Training
+# Workshop 1: Building Cloud Pipelines
 
-This is the application you are going to use through the whole traninig. This, hopefully, will teach you the fundamentals you need in a real project. You will find a basic TODO application designed with a [microservice architecture](https://microservices.io). Although is a TODO application, it is interesting because the microservices that compose it are written in different programming language or frameworks (Go, Python, Vue, Java, and NodeJS). With this design you will experiment with multiple build tools and environments. 
+Participants
 
-## Components
-In each folder you can find a more in-depth explanation of each component:
+| Names | Code | 
+|-------|------|
+|Camilo Carmona Valencia | A00381090 |
+|Juan Sebastián Libreros García | A00379813 |
 
-1. [Users API](/users-api) is a Spring Boot application. Provides user profiles. At the moment, does not provide full CRUD, just getting a single user and all users.
-2. [Auth API](/auth-api) is a Go application, and provides authorization functionality. Generates [JWT](https://jwt.io/) tokens to be used with other APIs.
-3. [TODOs API](/todos-api) is a NodeJS application, provides CRUD functionality over user's TODO records. Also, it logs "create" and "delete" operations to [Redis](https://redis.io/) queue.
-4. [Log Message Processor](/log-message-processor) is a queue processor written in Python. Its purpose is to read messages from a Redis queue and print them to standard output.
-5. [Frontend](/frontend) Vue application, provides UI.
+## How to run the project
 
-## Architecture
+### Locally 
 
-Take a look at the components diagram that describes them and their interactions.
-![microservice-app-example](/arch-img/Microservices.png)
+We created a a docker compose file that contains all the instructions that build and deploy the project. All the services have their own Dockerfile. Run the following command beign in the root of the project
+
+```
+docker-compose up
+```
+
+### Cloud deployment
+
+## Pipelines
+
+## Branching Strategy
+
+### Developement 
+
+For this project we decided to follow the Gitflow strategy. This is strategy has a simple structure composed by only three types of branches: main, dev and feature branches. We followed this strategy since we are only two people on the team and is a really simple project. 
+
+[image]
+
+### Operations
+
+Following the same idea that we are a simple team of two developers we decided to create a branch that comes from main called ops, where we stored the pipelines needed to deploy the project 
+
+## Implemented cloud patterns
+
+### Retry pattern
+
+We decided to implement this pattern to prevent the faults caused by unexpected events such as lossing connection or timeouts that occur when the server is busy. **Where we implemented this pattern?** We implemented this patterns in users-api and todos-api. In the first service is located in the service that offers the api to retreive the users since while this may ocurr a failure while the request is beign processed. The same situaton goes for the todos-api, where in the controller the communication between the redis and the service could be lost in any moment we asure that retries after a little amount of time.
+
+### Throttling pattern 
+
+As the retry pattern was implemented we complemented with the throttling pattern to limit the resources that the service uses stopping them when they exceed the limit. **Where we implemented this pattern?**  We implemented this patterns in users-api in the same service at offers the api to retreive the users since could collapse the program if it is over-used.
+
+## Architecture Diagram
+
+[Image]
+
