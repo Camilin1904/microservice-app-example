@@ -27,7 +27,7 @@ docker-compose up
 
 For this project we decided to follow the Gitflow strategy. This is strategy has a simple structure composed by only three types of branches: main, dev and feature branches. We followed this strategy since we are only two people on the team and is a really simple project. 
 
-[image]
+![GitHub Flow branch strategy](./arch-img/git-branch-strategy.png "GitHub Flow")
 
 ### Operations
 
@@ -45,5 +45,5 @@ As the retry pattern was implemented we complemented with the throttling pattern
 
 ## Architecture Diagram
 
-[Image]
+![Architecture Diagram](./arch-img/arch-diagram.png "Architecture Diagram")
 
