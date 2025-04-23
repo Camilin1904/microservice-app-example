@@ -17,7 +17,7 @@ variables:
   azureSubscription: 'PipelineConnection'        # ARM SC name
   JWT_SECRET: PRFT 
   REDIS_HOST: todo-redis.redis.cache.windows.net
-  REDIS_PORT: 6380 
+  REDIS_PORT: 6379
   REDIS_CHANNEL: log_channel
   ZIPKIN_URL: https://todo-zipkin-gqbcbmezgcbddwat.eastus-01.azurewebsites.net
 
