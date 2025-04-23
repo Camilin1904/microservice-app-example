@@ -54,7 +54,7 @@ stages:
                   {
                     "name":"USERS_API_ADDRESS",
                     "value":"$(USERS_API_ADDRESS)"
-                  }
+                  },
                   {
                     "name":"ZIPKIN_URL",
                     "value":"$(ZIPKIN_URL)"
