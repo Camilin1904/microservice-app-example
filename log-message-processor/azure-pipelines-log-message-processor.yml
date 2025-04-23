@@ -46,11 +46,30 @@ stages:
               buildContext: log-message-processor
               tags: |
                 $(Build.BuildId)
-              arguments: |
-                --build-arg REDIS_HOST=$(REDIS_HOST)
-                --build-arg REDIS_PORT=$(REDIS_PORT)
-                --build-arg REDIS_CHANNEL=$(REDIS_CHANNEL)
-                --build-arg ZIPKIN_URL=$(ZIPKIN_URL)
+          - task: AzureAppServiceSettings@1
+            displayName: 'Set environment variables for Web App'
+            inputs:
+              azureSubscription: $(azureSubscription)
+              appName: $(azureWebAppName)
+              appSettings: |
+                [
+                  {
+                    "name": "REDIS_HOST",
+                    "value": "$(REDIS_HOST)"
+                  },
+                  {
+                    "name": "REDIS_PORT",
+                    "value": "$(REDIS_PORT)"
+                  },
+                  {
+                    "name": "REDIS_CHANNEL",
+                    "value": "$(REDIS_CHANNEL)"
+                  },
+                  {
+                    "name": "ZIPKIN_URL",
+                    "value": "$(ZIPKIN_URL)"
+                  }
+                ]
 
   - stage: Deploy
     displayName: Deploy to Azure Web App
