@@ -68,6 +68,10 @@ stages:
                   {
                     "name": "ZIPKIN_URL",
                     "value": "$(ZIPKIN_URL)"
+                  },
+                  {
+                    "name":"JWT_SECRET",
+                    "value":"PRFT"
                   }
                 ]
 
