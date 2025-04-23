@@ -41,6 +41,9 @@ stages:
               command: buildAndPush
               Dockerfile: auth-api/Dockerfile
               buildContext: auth-api
+              arguments: |
+                --build-arg USERS_API_ADDRESS=$(USERS_API_ADDRESS)
+                --build-arg ZIPKIN_URL=$(ZIPKIN_URL)
               tags: |
                 $(Build.BuildId)
 
@@ -55,8 +58,6 @@ stages:
             inputs:
               azureSubscription: $(azureSubscription)
               appName: $(azureWebAppName)
-              envVars: |
-                USERS_API_ADDRESS=$(USERS_API_ADDRESS)
-                ZIPKIN_URL=$(ZIPKIN_URL)
+              
               containers: |
                 $(acrLoginServer)/$(imageName):$(Build.BuildId)
