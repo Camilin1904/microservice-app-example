@@ -41,6 +41,10 @@ stages:
               command: buildAndPush
               Dockerfile: frontend/Dockerfile
               buildContext: frontend
+              arguments: |
+                --build-arg AUTH_API_ADDRESS=$(AUTH_API_ADDRESS)
+                --build-arg TODOS_API_ADDRESS=$(TODOS_API_ADDRESS)
+                --build-arg ZIPKIN_URL=$(ZIPKIN_URL)
               tags: |
                 $(Build.BuildId)
               
@@ -55,9 +59,5 @@ stages:
             inputs:
               azureSubscription: $(azureSubscription)
               appName: $(azureWebAppName)
-              envVars: |
-                AUTH_API_ADDRESS=$(AUTH_API_ADDRESS)
-                TODOS_API_ADDRESS=$(TODOS_API_ADDRESS)
-                ZIPKIN_URL=$(ZIPKIN_URL)
               containers: |
                 $(acrLoginServer)/$(imageName):$(Build.BuildId)
