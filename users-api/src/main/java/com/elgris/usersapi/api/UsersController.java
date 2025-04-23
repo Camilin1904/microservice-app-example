@@ -2,6 +2,7 @@ package com.elgris.usersapi.api;
 
 import com.elgris.usersapi.models.User;
 import com.elgris.usersapi.repository.UserRepository;
+import com.elgris.usersapi.service.UserService;
 import io.jsonwebtoken.Claims;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
@@ -16,18 +17,15 @@ import java.util.List;
 public class UsersController {
 
     @Autowired
-    private UserRepository userRepository;
+    private UserService userService;
 
 
-    @RequestMapping(value = "/", method = RequestMethod.GET)
+    @GetMapping(value = "/")
     public List<User> getUsers() {
-        List<User> response = new LinkedList<>();
-        userRepository.findAll().forEach(response::add);
-
-        return response;
+        return userService.getAllUsers();
     }
 
-    @RequestMapping(value = "/{username}",  method = RequestMethod.GET)
+    @GetMapping(value = "/{username}")
     public User getUser(HttpServletRequest request, @PathVariable("username") String username) {
 
         Object requestAttribute = request.getAttribute("claims");
@@ -41,7 +39,7 @@ public class UsersController {
             throw new AccessDeniedException("No access for requested entity");
         }
 
-        return userRepository.findOneByUsername(username);
+        return userService.getUserByUsername(username);
     }
 
 }
