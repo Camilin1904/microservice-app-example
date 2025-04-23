@@ -20,12 +20,5 @@ WORKDIR /app
 # Copy the JAR from build stage
 COPY --from=build /app/target/users-api-0.0.1-SNAPSHOT.jar ./users-api.jar
 
-# Set required environment variables
-ENV JWT_SECRET=PRFT
-ENV SERVER_PORT=8083
-
-# Expose the port
-EXPOSE 8083
-
 # Command to run the application
 ENTRYPOINT ["java", "-jar", "users-api.jar"]

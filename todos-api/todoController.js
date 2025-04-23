@@ -31,6 +31,8 @@ class TodoController {
         data.items[data.lastInsertedID] = todo
 
         data.lastInsertedID++
+        
+
         this._setTodoData(req.user.username, data)
 
         this._logOperation(OPERATION_CREATE, req.user.username, todo.id)
@@ -51,6 +53,7 @@ class TodoController {
     }
 
     _logOperation (opName, username, todoId) {
+        /*
         this._tracer.scoped(() => {
             const traceId = this._tracer.id;
             this._redisClient.publish(this._logChannel, JSON.stringify({
@@ -59,10 +62,16 @@ class TodoController {
                 username: username,
                 todoId: todoId,
             }))
-        })
+        })*/
 
         const attempPublish = (retriesLeft = 3) => {
-            this._redisClient.publish(this._logChannel, message, (err, reply) => {
+            const traceId = this._tracer.id;
+            this._redisClient.publish(this._logChannel,  JSON.stringify({
+                                                                        zipkinSpan: traceId,
+                                                                        opName: opName,
+                                                                        username: username,
+                                                                        todoId: todoId,
+                    }), (err, reply) => {
 
                 if (err) {
                     if (retriesLeft > 0) {

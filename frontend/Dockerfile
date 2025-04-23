@@ -16,13 +16,6 @@ COPY . .
 # Construye la aplicación
 RUN npm run build
 
-# Expone el puerto configurado (puedes sobrescribirlo con una variable de entorno)
-EXPOSE 8080
-
-# Establece las variables de entorno por defecto (pueden ser sobrescritas en docker run o docker-compose)
-ENV PORT=8080 \
-    AUTH_API_ADDRESS=http://127.0.0.1:8000 \
-    TODOS_API_ADDRESS=http://127.0.0.1:8082
 
 # Comando para iniciar la app
 CMD ["npm", "start"]
