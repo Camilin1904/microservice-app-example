@@ -13,6 +13,7 @@ variables:
   imageName: 'zipkin'
   acrLoginServer: 'mytodosacr.azurecr.io'
   dockerRegistryServiceConnection: 'acr-connection' # Docker Registry SC name
+  resourceGroup: 'TallerPipelines'
   azureWebAppName: 'todo-zipkin'                 # Azure Web App name
   azureSubscription: 'PipelineConnection'        # ARM SC name
 
@@ -23,11 +24,14 @@ stages:
     jobs:
       - job: DeployWebApp
         steps:
-          - task: AzureWebAppContainer@1
-            displayName: Deploy image to Azure Web App
+          - task: AzureCLI@2
             inputs:
               azureSubscription: $(azureSubscription)
-              appName: $(azureWebAppName)
-              
-              containers: |
-                'openzipkin/zipkin:latest'
+              scriptType: bash
+              scriptLocation: inlineScript
+              inlineScript: |
+                az webapp config container set \
+                  --name $(azureWebAppName) \
+                  --resource-group $(resourceGroup) \
+                  --docker-custom-image-name openzipkin/zipkin:latest \
+                  --docker-registry-server-url https://index.docker.io
