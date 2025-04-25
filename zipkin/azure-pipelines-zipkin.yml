@@ -30,4 +30,4 @@ stages:
               appName: $(azureWebAppName)
               
               containers: |
-                'openzipkin/zipkin'
+                'openzipkin/zipkin:latest'
