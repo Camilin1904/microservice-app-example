@@ -1,0 +1,32 @@
+pool:
+  vmImage: 'ubuntu-latest'
+
+
+
+steps:
+- task: AzureCLI@2
+  inputs:
+    azureSubscription: 'mytodoacr'
+    scriptType: 'bash'
+    scriptLocation: 'inlineScript'
+    inlineScript: |
+      terraform init
+      terraform plan -out=tfplan
+      terraform apply -auto-approve tfplan
+
+- script: |
+    sudo apt-get install jq
+  displayName: 'install jq'
+
+- script: |
+    terraform output -json > terraform_output.json
+    admin_password=$(jq -r '.admin_password.value' terraform_output.json)
+    public_ip=$(jq -r '.public_ip_address.value' terraform_output.json)
+    echo "##vso[task.setvariable variable=admin_password;issecret=true]$admin_password"
+    echo "##vso[task.setvariable variable=public_ip]$public_ip"
+  displayName: 'Capture Terraform Outputs'
+
+- script: |
+    echo "Admin Password: $(admin_password)"
+    echo "Public IP: $(public_ip)"
+  displayName: 'Use Terraform Outputs'

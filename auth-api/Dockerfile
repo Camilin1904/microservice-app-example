@@ -14,4 +14,8 @@ RUN apk --no-cache add ca-certificates
 FROM debian:buster-slim
 WORKDIR /root/
 COPY --from=builder /app/auth-api .
+
+ENV AUTH_API_PORT=8000
+
+EXPOSE 8000
 CMD ["./auth-api"]
