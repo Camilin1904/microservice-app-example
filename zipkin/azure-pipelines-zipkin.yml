@@ -30,21 +30,15 @@ stages:
               scriptType: bash
               scriptLocation: inlineScript
               inlineScript: |
+                az webapp config appsettings set \
+                  --name $(azureWebAppName) \
+                  --resource-group $(resourceGroup) \
+                  --settings WEBSITES_PORT=9411
+
                 az webapp config container set \
                   --name $(azureWebAppName) \
                   --resource-group $(resourceGroup) \
                   --docker-custom-image-name openzipkin/zipkin:latest \
                   --docker-registry-server-url https://index.docker.io
-          - task: AzureCLI@2
-            displayName: Set WEBSITES_PORT App Setting
-            inputs:
-              azureSubscription: $(azureSubscription)
-              scriptType: bash
-              scriptLocation: inlineScript
-              inlineScript: |
-                echo "Setting WEBSITES_PORT to 9411..."
-                az webapp config appsettings set \
-                  --name $(azureWebAppName) \
-                  --resource-group $(resourceGroup) \
-                  --settings WEBSITES_PORT=9411
+
                   
