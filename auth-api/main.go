@@ -24,6 +24,7 @@ var (
 )
 
 func main() {
+	a
 	hostport := ":" + os.Getenv("PORT")
 	userAPIAddress := os.Getenv("USERS_API_ADDRESS")
 
