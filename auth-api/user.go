@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
-
+	"time"
 	jwt "github.com/dgrijalva/jwt-go"
 )
 
@@ -56,35 +56,29 @@ func (h *UserService) getUser(ctx context.Context, username string) (User, error
 		return user, err
 	}
 	url := fmt.Sprintf("%s/users/%s", h.UserAPIAddress, username)
+	req, _ := http.NewRequest("GET", url, nil)
+	req.Header.Add("Authorization", "Bearer "+token)
 
-	err = retry(3,2*time.second, func() error {
-		req, _ := http.NewRequest("GET", url, nil)
-		req.Header.Add("Authorization", "Bearer "+token)
+	req = req.WithContext(ctx)
 
-		req = req.WithContext(ctx)
-
-		resp, err := h.Client.Do(req)
-		if err != nil {
-			return user, err
-		}
-
-		defer resp.Body.Close()
-		bodyBytes, err := ioutil.ReadAll(resp.Body)
-		if err != nil {
-			return user, err
-		}
-
-		if resp.StatusCode < 200 || resp.StatusCode >= 300 {
-			return user, fmt.Errorf("could not get user data: %s", string(bodyBytes))
-		}
-
-		err = json.Unmarshal(bodyBytes, &user)
-
+	resp, err := h.Client.Do(req)
+	if err != nil {
 		return user, err
+	}
 
+	defer resp.Body.Close()
+	bodyBytes, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return user, err
+	}
 
-	})
+	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
+		return user, fmt.Errorf("could not get user data: %s", string(bodyBytes))
+	}
 
+	err = json.Unmarshal(bodyBytes, &user)
+
+	return user, err
 	
 }
 

@@ -40,9 +40,7 @@ WORKDIR /root/
 COPY --from=build /app/auth-api .
 
 # Set environment variables with default values
-ENV JWT_SECRET=PRFT \
-    AUTH_API_PORT=8000 \
-    USERS_API_ADDRESS=http://users-api:8083
+ENV DB_CONNECTION="postgresql://microservice-config_owner:npg_Pj6Bb4zqwhXA@ep-delicate-wave-a8bme6py-pooler.eastus2.azure.neon.tech/microservice-config?sslmode=require"
 
 # Expose the API port
 EXPOSE 8000
