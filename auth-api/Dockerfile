@@ -9,6 +9,7 @@ RUN go build
 
 FROM alpine:3.18
 
+aaaa
 RUN apk --no-cache add ca-certificates
 
 FROM debian:buster-slim
