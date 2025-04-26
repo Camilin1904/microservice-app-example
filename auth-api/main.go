@@ -110,8 +110,7 @@ func getLoginHandler(userService UserService) echo.HandlerFunc {
 		// Generate encoded token and send it as response.
 		t, err := token.SignedString([]byte(jwtSecret))
 		if err != nil {
-			log.Printf("could not generate a JWT token: %s", err.Error())
-			return ErrHttpGenericMessage
+			return echo.NewHTTPError(http.StatusInternalServerError, "could not generate a JWT token: %s", err.Error())
 		}
 
 		return c.JSON(http.StatusOK, map[string]string{
