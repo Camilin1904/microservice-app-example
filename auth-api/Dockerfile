@@ -15,8 +15,5 @@ FROM debian:buster-slim
 WORKDIR /root/
 COPY --from=builder /app/auth-api .
 
-ENV AUTH_API_PORT=80000
-ENV PORT = 8000
-
-EXPOSE 8000
+EXPOSE 37815
 CMD ["./auth-api"]
