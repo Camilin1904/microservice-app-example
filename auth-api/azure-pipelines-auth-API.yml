@@ -63,7 +63,7 @@ stages:
                   {
                     "name":"JWT_SECRET",
                     "value":"PRFT"
-                  }
+                  },
                   {
                     "name":"AUTH_API_PORT",
                     "value":"$(AUTH_API_PORT)"
