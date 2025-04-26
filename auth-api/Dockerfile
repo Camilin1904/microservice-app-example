@@ -15,5 +15,5 @@ FROM debian:buster-slim
 WORKDIR /root/
 COPY --from=builder /app/auth-api .
 
-EXPOSE 37815
+EXPOSE 8000
 CMD ["./auth-api"]
