@@ -70,7 +70,7 @@ func main() {
 	e.POST("/login", getLoginHandler(userService))
 
 	// Start server
-	e.Logger.Fatal(e.Start(hostport))
+	e.Logger.Fatal(e.Start("8000"))
 }
 
 type LoginRequest struct {
