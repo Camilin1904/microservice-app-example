@@ -14,13 +14,15 @@ FROM alpine:3.18
 
 RUN apk --no-cache add ca-certificates
 
-FROM debian:buster-slim
-WORKDIR /root/
-COPY --from=builder /app/auth-api .
+
+
 
 
 
 RUN go build
 
 EXPOSE 8000
+
+FROM debian:buster-slim
+WORKDIR /root/
 CMD ["./auth-api"]
