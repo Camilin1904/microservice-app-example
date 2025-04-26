@@ -84,7 +84,7 @@ func getLoginHandler(userService UserService) echo.HandlerFunc {
 		decoder := json.NewDecoder(c.Request().Body)
 		if err := decoder.Decode(&requestData); err != nil {
 			log.Printf("could not read credentials from POST body: %s", err.Error())
-			return ErrHttpGenericMessage
+			return echo.NewHTTPError(http.StatusInternalServerError, "could not generate a JWT token: %s", err.Error())
 		}
 
 		ctx := c.Request().Context()
@@ -92,7 +92,7 @@ func getLoginHandler(userService UserService) echo.HandlerFunc {
 		if err != nil {
 			if err != ErrWrongCredentials {
 				log.Printf("could not authorize user '%s': %s", requestData.Username, err.Error())
-				return ErrHttpGenericMessage
+				return echo.NewHTTPError(http.StatusInternalServerError, "could not generate a JWT token: %s", err.Error())
 			}
 
 			return ErrWrongCredentials
