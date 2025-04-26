@@ -24,8 +24,7 @@ var (
 )
 
 func main() {
-	a
-	hostport := ":" + os.Getenv("PORT")
+	hostport := ":" + os.Getenv("AUTH_API_PORT")
 	userAPIAddress := os.Getenv("USERS_API_ADDRESS")
 
 	envJwtSecret := os.Getenv("JWT_SECRET")
@@ -111,7 +110,8 @@ func getLoginHandler(userService UserService) echo.HandlerFunc {
 		// Generate encoded token and send it as response.
 		t, err := token.SignedString([]byte(jwtSecret))
 		if err != nil {
-			return  echo.NewHTTPError(http.StatusInternalServerError, "could not generate a JWT token: %s", err.Error())
+			log.Printf("could not generate a JWT token: %s", err.Error())
+			return ErrHttpGenericMessage
 		}
 
 		return c.JSON(http.StatusOK, map[string]string{
