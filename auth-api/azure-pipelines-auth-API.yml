@@ -17,6 +17,7 @@ variables:
   azureSubscription: 'PipelineConnection'        # ARM SC name
   USERS_API_ADDRESS: https://users-api-fqf5b6eycxc5fzdf.eastus-01.azurewebsites.net
   ZIPKIN_URL: https://todo-zipkin-gqbcbmezgcbddwat.eastus-01.azurewebsites.net/api/v2/spans
+  AUTH_API_PORT: 8000
 
 stages:
   - stage: BuildAndPush
@@ -62,6 +63,10 @@ stages:
                   {
                     "name":"JWT_SECRET",
                     "value":"PRFT"
+                  }
+                  {
+                    "name":"AUTH_API_PORT",
+                    "value":"$(AUTH_API_PORT)"
                   }
                 ]
 
