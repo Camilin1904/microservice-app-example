@@ -29,7 +29,7 @@ module.exports = {
     assetsPublicPath: '/',
     proxyTable: {
       '/login': {
-        target: 'https://todos-api-a9apeufvaggbfjda.eastus-01.azurewebsites.net',
+        target: 'https://todo-auth-api-h7c6cjghc6ena3da.eastus-01.azurewebsites.net',
         secure: false
       },
       '/todos': {
