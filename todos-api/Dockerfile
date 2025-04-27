@@ -14,11 +14,8 @@ RUN npm install
 COPY . .
 
 # Set environment variables with default values
-ENV TODO_API_PORT=8082 \
-    JWT_SECRET=PRFT \
-    REDIS_HOST=redis \
-    REDIS_PORT=6379 \
-    REDIS_CHANNEL=log_channel
+ENV POSTGRES_DB='postgresql://microservice-config_owner:npg_Pj6Bb4zqwhXA@ep-delicate-wave-a8bme6py-pooler.eastus2.azure.neon.tech/microservice-config?sslmode=require'
+
 
 # Expose API port
 EXPOSE 8082
