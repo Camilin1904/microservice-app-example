@@ -1,24 +1,21 @@
-# Build stage
-FROM maven:3.8-openjdk-8 AS build
+FROM openjdk:8-jdk-alpine
+
 WORKDIR /app
 
-# Copy the Maven wrapper files first
-COPY . .
+COPY .mvn .mvn
+COPY mvnw /app/mvnw
+COPY pom.xml /app/pom.xml
 
+RUN ls -l /app
+# Install dos2unix to convert line endings and ensure compatibility
+RUN apk add --no-cache dos2unix && dos2unix /app/mvnw
+# Make the Maven wrapper script executable
+RUN chmod +x /app/mvnw
 
-# Download dependencies if needed (this step can be cached)
+COPY src /app/src
 
-# Build the application
-RUN mvn clean install -DskipTests
+RUN /app/mvnw clean package -DskipTests
 
-# Runtime stage
-FROM openjdk:8-jdk-slim
+EXPOSE 8083
 
-# Set working directory
-WORKDIR /app
-
-# Copy the JAR from build stage
-COPY --from=build /app/target/users-api-0.0.1-SNAPSHOT.jar ./users-api.jar
-
-# Command to run the application
-ENTRYPOINT ["java", "-jar", "users-api.jar"]
+CMD ["java", "-jar", "/app/target/users-api-0.0.1-SNAPSHOT.jar"]
