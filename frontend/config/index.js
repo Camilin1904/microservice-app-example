@@ -33,11 +33,11 @@ module.exports = {
         secure: false
       },
       '/todos': {
-        target: process.env.TODOS_API_ADDRESS || 'http://127.0.0.1:8082',
+        target: 'https://todos-api-a9apeufvaggbfjda.eastus-01.azurewebsites.net',
         secure: false
       },
       '/zipkin': {
-        target: process.env.ZIPKIN_URL || 'http://127.0.0.1:9411/api/v2/spans',
+        target: 'https://todo-zipkin-gqbcbmezgcbddwat.eastus-01.azurewebsites.net',
         pathRewrite: {
           '^/zipkin': ''
         },
