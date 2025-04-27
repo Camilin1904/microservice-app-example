@@ -126,7 +126,7 @@ export default {
       this.isProcessing = true
       this.errorMessage = ''
 
-      Vue.http.delete(TODO_URL + item.id).then(response => {
+      Vue.http.delete(TODO_URL + '/' +  item.id).then(response => {
         this.isProcessing = false
         this.tasks.splice(index, 1)
       }, error => {
