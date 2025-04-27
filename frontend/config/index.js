@@ -29,7 +29,7 @@ module.exports = {
     assetsPublicPath: '/',
     proxyTable: {
       '/login': {
-        target: process.env.AUTH_API_ADDRESS || 'http://127.0.0.1:8081',
+        target: 'https://todos-api-a9apeufvaggbfjda.eastus-01.azurewebsites.net',
         secure: false
       },
       '/todos': {
