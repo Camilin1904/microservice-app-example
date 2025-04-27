@@ -60,7 +60,12 @@ func main() {
 
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
-	e.Use(middleware.CORS())
+	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
+		AllowOrigins: []string{"https://todo-frontend-ehb3fjcfe7fsfve6.eastus-01.azurewebsites.net"},
+		AllowMethods: []string{http.MethodGet, http.MethodPost, http.MethodPut, http.MethodDelete, http.MethodOptions},
+		AllowHeaders: []string{"Authorization", "Content-Type"},
+		AllowCredentials: true,
+	}))
 
 	// Route => handler
 	e.GET("/version", func(c echo.Context) error {
@@ -68,10 +73,6 @@ func main() {
 	})
 
 	e.POST("/login", getLoginHandler(userService))
-
-	e.OPTIONS("/*", func(c echo.Context) error {
-		return c.NoContent(http.StatusOK)
-	})
 
 	// Start server
 	e.Logger.Fatal(e.Start(hostport))
