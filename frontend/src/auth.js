@@ -63,16 +63,16 @@ export default {
       }
     })
       .then((response) => {
-      this._storeToken(response)
+        this._storeToken(response)
 
-      if (redirect) {
-        router.push({ name: redirect })
-      }
+        if (redirect) {
+          router.push({ name: redirect })
+        }
 
-      return response
+        return response
       })
       .catch((errorResponse) => {
-      return errorResponse
+        return errorResponse
       })
   },
 
