@@ -69,6 +69,10 @@ func main() {
 
 	e.POST("/login", getLoginHandler(userService))
 
+	e.OPTIONS("/*", func(c echo.Context) error {
+		return c.NoContent(http.StatusOK)
+	})
+
 	// Start server
 	e.Logger.Fatal(e.Start(hostport))
 }
