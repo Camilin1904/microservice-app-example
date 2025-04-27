@@ -67,7 +67,7 @@ stages:
                   },
                   {
                     "name": "PORT",
-                    "value": "$PORT"
+                    "value": "$(PORT)"
                   }
                 ]
   - stage: Deploy
