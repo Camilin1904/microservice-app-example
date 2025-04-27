@@ -60,12 +60,7 @@ func main() {
 
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
-	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
-		AllowOrigins: []string{"https://todo-frontend-ehb3fjcfe7fsfve6.eastus-01.azurewebsites.net"},
-		AllowMethods: []string{http.MethodGet, http.MethodPost, http.MethodPut, http.MethodDelete, http.MethodOptions},
-		AllowHeaders: []string{"Authorization", "Content-Type"},
-		AllowCredentials: true,
-	}))
+	e.Use(middleware.CORS())
 
 	// Route => handler
 	e.GET("/version", func(c echo.Context) error {
@@ -89,7 +84,7 @@ func getLoginHandler(userService UserService) echo.HandlerFunc {
 		decoder := json.NewDecoder(c.Request().Body)
 		if err := decoder.Decode(&requestData); err != nil {
 			log.Printf("could not read credentials from POST body: %s", err.Error())
-			return echo.NewHTTPError(http.StatusInternalServerError, "could not read credentials from POST body: %s" + err.Error())
+			return echo.NewHTTPError(http.StatusInternalServerError, "could not read credentials from POST body: %s", err.Error())
 		}
 
 		ctx := c.Request().Context()
@@ -97,7 +92,7 @@ func getLoginHandler(userService UserService) echo.HandlerFunc {
 		if err != nil {
 			if err != ErrWrongCredentials {
 				log.Printf("could not authorize user '%s': %s", requestData.Username, err.Error())
-				return echo.NewHTTPError(http.StatusInternalServerError, "could not authorize user  %s" + err.Error())
+				return echo.NewHTTPError(http.StatusInternalServerError, "could not generate a JWT token: %s", err.Error())
 			}
 
 			return ErrWrongCredentials
