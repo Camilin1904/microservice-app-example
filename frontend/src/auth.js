@@ -59,7 +59,7 @@ export default {
 
     return Vue.http.post(LOGIN_URL, params, {
       headers: {
-      'Access-Control-Allow-Origin': '*'
+        'Access-Control-Allow-Origin': '*'
       }
     })
       .then((response) => {
