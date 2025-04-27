@@ -32,7 +32,7 @@ class TodoController {
 
         data.lastInsertedID++
         
-
+        console.log('todo', todo)
         this._setTodoData(req.user.username, data)
 
         this._logOperation(OPERATION_CREATE, req.user.username, todo.id)
