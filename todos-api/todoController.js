@@ -64,7 +64,7 @@ class TodoController {
             }))
         })*/
 
-        const attempPublish = (retriesLeft = 3) => {
+        const attemptPublish = (retriesLeft = 3) => {
             const traceId = this._tracer.id;
             this._redisClient.publish(this._logChannel,  JSON.stringify({
                                                                         zipkinSpan: traceId,
@@ -86,7 +86,7 @@ class TodoController {
             });
         };
 
-        attempPublish(); 
+        attemptPublish(); 
     }
 
     _getTodoData (userID) {

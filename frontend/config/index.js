@@ -29,7 +29,7 @@ module.exports = {
     assetsPublicPath: '/',
     proxyTable: {
       '/login': {
-        target: 'https://todo-auth-api-h7c6cjghc6ena3da.eastus-01.azurewebsites.net',
+        target: 'https://todo-auth-api-h7c6cjghc6ena3da.eastus-01.azurewebsites.net ',
         secure: false
       },
       '/todos': {
@@ -37,7 +37,7 @@ module.exports = {
         secure: false
       },
       '/zipkin': {
-        target: 'https://todo-zipkin-gqbcbmezgcbddwat.eastus-01.azurewebsites.net',
+        target: 'https://todo-zipkin-gqbcbmezgcbddwat.eastus-01.azurewebsites.net/api/v2/spans',
         pathRewrite: {
           '^/zipkin': ''
         },
