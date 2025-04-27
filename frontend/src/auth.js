@@ -57,18 +57,22 @@ export default {
       password: creds.password
     }
 
-    return Vue.http.post(LOGIN_URL, params)
+    return Vue.http.post(LOGIN_URL, params, {
+      headers: {
+      'Access-Control-Allow-Origin': '*'
+      }
+    })
       .then((response) => {
-        this._storeToken(response)
+      this._storeToken(response)
 
-        if (redirect) {
-          router.push({ name: redirect })
-        }
+      if (redirect) {
+        router.push({ name: redirect })
+      }
 
-        return response
+      return response
       })
       .catch((errorResponse) => {
-        return errorResponse
+      return errorResponse
       })
   },
 
