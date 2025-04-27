@@ -13,6 +13,7 @@ RUN npm install
 # Copia el resto del código de la aplicación
 COPY . .
 
+RUN node config/load-env.js
 # Construye la aplicación
 RUN npm run build
 
