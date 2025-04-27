@@ -1,0 +1,89 @@
+trigger:
+  branches:
+      include:
+        - master
+  paths:
+    include:
+      - log-message-processor/**
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+  imageName: 'log-message-processor'
+  acrLoginServer: 'mytodosacr.azurecr.io'
+  dockerRegistryServiceConnection: 'acr-connection' # Docker Registry SC name
+  azureWebAppName: 'log-message-processor'          # Azure Web App name
+  azureSubscription: 'PipelineConnection'           # ARM SC name
+
+  # Application-specific environment variables
+  REDIS_HOST: todo-redis.redis.cache.windows.net
+  REDIS_PORT: 6379
+  REDIS_CHANNEL: log_channel
+  ZIPKIN_URL: https://todo-zipkin-gqbcbmezgcbddwat.eastus-01.azurewebsites.net/api/v2/spans
+
+stages:
+  - stage: BuildAndPush
+    displayName: Build and Push Docker Image
+    jobs:
+      - job: Docker
+        steps:
+                      
+          - task: Docker@2
+            displayName: Build and push image to ACR
+            inputs:
+              containerRegistry: $(dockerRegistryServiceConnection)
+              repository: $(imageName)
+              command: buildAndPush
+              Dockerfile: log-message-processor/Dockerfile
+              buildContext: log-message-processor
+              tags: |
+                $(Build.BuildId)
+          - task: AzureAppServiceSettings@1
+            displayName: 'Set environment variables for Web App'
+            inputs:
+              azureSubscription: $(azureSubscription)
+              appName: $(azureWebAppName)
+              appSettings: |
+                [
+                  {
+                    "name": "REDIS_HOST",
+                    "value": "$(REDIS_HOST)"
+                  },
+                  {
+                    "name": "REDIS_PORT",
+                    "value": "$(REDIS_PORT)"
+                  },
+                  {
+                    "name": "REDIS_CHANNEL",
+                    "value": "$(REDIS_CHANNEL)"
+                  },
+                  {
+                    "name": "ZIPKIN_URL",
+                    "value": "$(ZIPKIN_URL)"
+                  },
+                  {
+                    "name":"JWT_SECRET",
+                    "value":"PRFT"
+                  }
+                ]
+
+  - stage: Deploy
+    displayName: Deploy to Azure Web App
+    dependsOn: BuildAndPush
+    jobs:
+      - job: DeployWebApp
+        steps:
+          - task: AzureWebAppContainer@1
+            displayName: Deploy image to Azure Web App
+            inputs:
+              azureSubscription: $(azureSubscription)
+              appName: $(azureWebAppName)
+              containers: |
+                $(acrLoginServer)/$(imageName):$(Build.BuildId)
+              containerCommand: ""  # uses CMD from Dockerfile
+              envVars: |
+                REDIS_HOST=$(REDIS_HOST)
+                REDIS_PORT=$(REDIS_PORT)
+                REDIS_CHANNEL=$(REDIS_CHANNEL)
+                ZIPKIN_URL=$(ZIPKIN_URL)
