@@ -53,6 +53,9 @@ class TodoController {
     }
 
     _logOperation (opName, username, todoId) {
+
+        console.log('log operation', opName, username, todoId)
+
         /*
         this._tracer.scoped(() => {
             const traceId = this._tracer.id;
