@@ -6,11 +6,12 @@ import (
 	"net/http"
 	"os"
 	"time"
-
+	"github.com/jackc/pgx/v4"
 	jwt "github.com/dgrijalva/jwt-go"
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
 	gommonlog "github.com/labstack/gommon/log"
+	context "context"
 )
 
 var (
@@ -24,10 +25,37 @@ var (
 )
 
 func main() {
-	hostport := ":" + os.Getenv("AUTH_API_PORT")
-	userAPIAddress := os.Getenv("USERS_API_ADDRESS")
 
-	envJwtSecret := os.Getenv("JWT_SECRET")
+	conn, err := pgx.Connect(context.Background(), os.Getenv("DB_CONNECTION"))
+
+	if err != nil {
+		log.Fatalf("Unable to connect to database: %v\n", err)
+	}
+
+	defer conn.Close(context.Background())
+
+	config := make(map[string]string)
+
+	rows, err := conn.Query(context.Background(), "SELECT name, values FROM config")
+
+	if err != nil {
+        log.Fatalf("Failed too fetch configuration from database: %v\n", err)
+    }
+    defer rows.Close()
+
+	for rows.Next() {
+		var name, value string
+		if err := rows.Scan(&name, &value); err != nil {
+			log.Fatalf("Failed to scan row: %v\n", err)
+		}
+		config[name] = value
+	}
+
+	hostport := ":" + config["AUTH_API_PORT"]
+	userAPIAddress := config["USERS_API_ADDRESS"]
+
+	envJwtSecret := config["JWT_SECRET"]
+	
 	if len(envJwtSecret) != 0 {
 		jwtSecret = envJwtSecret
 	}
@@ -45,7 +73,7 @@ func main() {
 	e := echo.New()
 	e.Logger.SetLevel(gommonlog.INFO)
 
-	if zipkinURL := os.Getenv("ZIPKIN_URL"); len(zipkinURL) != 0 {
+	if zipkinURL := config["ZIPKIN_URL"]; len(zipkinURL) != 0 {
 		e.Logger.Infof("init tracing to Zipkit at %s", zipkinURL)
 
 		if tracedMiddleware, tracedClient, err := initTracing(zipkinURL); err == nil {

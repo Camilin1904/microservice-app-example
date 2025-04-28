@@ -13,27 +13,61 @@ const {Tracer,
   const CLSContext = require('zipkin-context-cls');  
 const {HttpLogger} = require('zipkin-transport-http');
 const zipkinMiddleware = require('zipkin-instrumentation-express').expressMiddleware;
+const { Client } = require('pg')
 
-const logChannel = process.env.REDIS_CHANNEL || 'log_channel';
-const redisClient = require("redis").createClient({
-  host: process.env.REDIS_HOST || 'localhost',
-  port: process.env.REDIS_PORT || 6379,
-  retry_strategy: function (options) {
-      if (options.error && options.error.code === 'ECONNREFUSED') {
-          return new Error('The server refused the connection');
-      }
-      if (options.total_retry_time > 1000 * 60 * 60) {
-          return new Error('Retry time exhausted');
-      }
-      if (options.attempt > 10) {
-          console.log('reattemtping to connect to redis, attempt #' + options.attempt)
-          return undefined;
-      }
-      return Math.min(options.attempt * 100, 2000);
-  }        
-});
-const port = process.env.TODO_API_PORT || 8082
-const jwtSecret = process.env.JWT_SECRET || "foo"
+async function config(){
+  const client = new Client({
+    database: process.env.POSTGRES_DB,
+    ssl: {
+      rejectUnauthorized: false
+    },
+  });
+
+  try {
+    await client.connect()
+    const res = await client.query('SELECT name, values FROM config')
+    const config = {}
+    res.rows.forEach(row => {
+      config[row.name] = row.values
+    })
+    return config
+  } catch (error) {
+    console.error('Error connecting to PostgreSQL:', error)
+    throw error
+  }
+}
+
+(async () => {
+  const config = await config();
+
+  const ZIPKIN_URL =config.ZIPKIN_URL || 'http://127.0.0.1:9411/api/v2/spans';
+  const {Tracer, 
+    BatchRecorder,
+    jsonEncoder: {JSON_V2}} = require('zipkin');
+    const CLSContext = require('zipkin-context-cls');  
+  const {HttpLogger} = require('zipkin-transport-http');
+  const zipkinMiddleware = require('zipkin-instrumentation-express').expressMiddleware;
+
+  const logChannel = config.REDIS_CHANNEL || 'log_channel';
+  const redisClient = require("redis").createClient({
+    host: config.REDIS_HOST || 'localhost',
+    port: config.REDIS_PORT || 6379,
+    retry_strategy: function (options) {
+        if (options.error && options.error.code === 'ECONNREFUSED') {
+            return new Error('The server refused the connection');
+        }
+        if (options.total_retry_time > 1000 * 60 * 60) {
+            return new Error('Retry time exhausted');
+        }
+        if (options.attempt > 10) {
+            console.log('reattemtping to connect to redis, attempt #' + options.attempt)
+            return undefined;
+        }
+        return Math.min(options.attempt * 100, 2000);
+    }        
+  });
+  const port = config.TODO_API_PORT || 8082
+  const jwtSecret = config.JWT_SECRET || "foo"
 
 const app = express()
 
@@ -46,31 +80,35 @@ app.use(cors({
   credentials: true // Allow cookies or authentication headers
 }));
 
-// tracing
-const ctxImpl = new CLSContext('zipkin');
-const recorder = new  BatchRecorder({
-  logger: new HttpLogger({
-    endpoint: ZIPKIN_URL,
-    jsonEncoder: JSON_V2
+  // tracing
+  const ctxImpl = new CLSContext('zipkin');
+  const recorder = new  BatchRecorder({
+    logger: new HttpLogger({
+      endpoint: ZIPKIN_URL,
+      jsonEncoder: JSON_V2
+    })
+  });
+
+  const localServiceName = 'todos-api';
+  const tracer = new Tracer({ctxImpl, recorder, localServiceName});
+
+  app.use(jwt({ secret: jwtSecret }))
+  app.use(zipkinMiddleware({tracer}));
+  app.use(function (err, req, res, next) {
+    if (err.name === 'UnauthorizedError') {
+      res.status(401).send({ message: 'invalid token' })
+    }
   })
+  app.use(bodyParser.urlencoded({ extended: false }))
+  app.use(bodyParser.json())
+
+  const routes = require('./routes')
+  routes(app, {tracer, redisClient, logChannel})
+
+  app.listen(port, function () {
+    console.log('todo list RESTful API server started on: ' + port)
+  })
+  
 });
-const localServiceName = 'todos-api';
-const tracer = new Tracer({ctxImpl, recorder, localServiceName});
 
 
-app.use(jwt({ secret: jwtSecret }))
-app.use(zipkinMiddleware({tracer}));
-app.use(function (err, req, res, next) {
-  if (err.name === 'UnauthorizedError') {
-    res.status(401).send({ message: 'invalid token' })
-  }
-})
-app.use(bodyParser.urlencoded({ extended: false }))
-app.use(bodyParser.json())
-
-const routes = require('./routes')
-routes(app, {tracer, redisClient, logChannel})
-
-app.listen(port, function () {
-  console.log('todo list RESTful API server started on: ' + port)
-})

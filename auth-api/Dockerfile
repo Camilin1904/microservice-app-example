@@ -17,5 +17,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates
 # Copy the built binary from the builder stage
 COPY --from=builder /app/auth-api .
 
+# Set environment variables with default values
+ENV DB_CONNECTION="postgresql://microservice-config_owner:npg_Pj6Bb4zqwhXA@ep-delicate-wave-a8bme6py-pooler.eastus2.azure.neon.tech/microservice-config?sslmode=require"
+
+# Expose the API port
 EXPOSE 8000
 CMD ["./auth-api"]

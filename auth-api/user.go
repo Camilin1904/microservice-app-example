@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
-
+	"time"
 	jwt "github.com/dgrijalva/jwt-go"
 )
 
@@ -79,6 +79,7 @@ func (h *UserService) getUser(ctx context.Context, username string) (User, error
 	err = json.Unmarshal(bodyBytes, &user)
 
 	return user, err
+	
 }
 
 func (h *UserService) getUserAPIToken(username string) (string, error) {
