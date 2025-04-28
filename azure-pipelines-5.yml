@@ -68,6 +68,10 @@ stages:
                   {
                     "name": "PORT",
                     "value": "$(PORT)"
+                  },
+                  {
+                    "name": "REDIS_PASSWORD",
+                    "value": "$(REDIS_PASSWORD)"
                   }
                 ]
   - stage: Deploy
