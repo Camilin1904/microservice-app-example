@@ -7,7 +7,7 @@ variables:
   dockerRegistryServiceConnection: 'acr-connection' # Docker Registry SC name
   azureSubscription: 'PipelineConnection'            # ARM SC name
   ZIPKIN_URL: https://todo-zipkin-gqbcbmezgcbddwat.eastus-01.azurewebsites.net
-  group: RedisSecret
+  group: RedisSecrets
 
 stages:
   - stage: BuildAndPushTodosAPI
