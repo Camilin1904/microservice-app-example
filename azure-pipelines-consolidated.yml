@@ -7,6 +7,7 @@ variables:
   dockerRegistryServiceConnection: 'acr-connection' # Docker Registry SC name
   azureSubscription: 'PipelineConnection'            # ARM SC name
   ZIPKIN_URL: https://todo-zipkin-gqbcbmezgcbddwat.eastus-01.azurewebsites.net
+  group: RedisSecret
 
 stages:
   - stage: BuildAndPushTodosAPI
@@ -33,11 +34,30 @@ stages:
               tags: |
                 $(Build.BuildId)
               envVars: |
-                JWT_SECRET=PRFT
-                REDIS_HOST=redisTODO.redis.cache.windows.net
-                REDIS_PORT=6380
-                REDIS_CHANNEL=log_channel
-                ZIPKIN_URL=$(ZIPKIN_URL)
+              {
+                'name': 'REDIS_PASSWORD',
+                'value': '$(REDIS_PASSWORD)',
+              }
+              {
+                'name': 'JWT_SECRET',
+                'value': 'PRFT',
+              }
+              {
+                'name': 'REDIS_HOST',
+                'value': 'redisTODO.redis.cache.windows.net',
+              }
+              {
+                'name': 'REDIS_PORT',
+                'value': '6379',
+              }
+              {
+                'name': 'REDIS_CHANNEL',
+                'value': 'log_channel',
+              }
+              {
+                'name': 'ZIPKIN_URL',
+                'value': '$(ZIPKIN_URL)',
+              }
 
   - stage: BuildAndPushAuthAPI
     displayName: Build and Push Auth API Docker Image
@@ -63,8 +83,14 @@ stages:
               tags: |
                 $(Build.BuildId)
               envVars: |
-                USERS_API_ADDRESS=https://users-api-fqf5b6eycxc5fzdf.eastus-01.azurewebsites.net
-                ZIPKIN_URL=$(ZIPKIN_URL)
+              {
+                'name': 'USERS_API_ADDRESS',
+                'value': 'https://users-api-fqf5b6eycxc5fzdf.eastus-01.azurewebsites.net',
+              }
+              {
+                'name': 'ZIPKIN_URL',
+                'value': '$(ZIPKIN_URL)',
+              }
 
   - stage: BuildAndPushFrontend
     displayName: Build and Push Frontend Docker Image
@@ -90,9 +116,18 @@ stages:
               tags: |
                 $(Build.BuildId)
               envVars: |
-                AUTH_API_ADDRESS=https://todo-auth-api-h7c6cjghc6ena3da.eastus-01.azurewebsites.net
-                TODOS_API_ADDRESS=https://todos-api-a9apeufvaggbfjda.eastus-01.azurewebsites.net
-                ZIPKIN_URL=$(ZIPKIN_URL)
+              {
+                'name': 'AUTH_API_ADDRESS',
+                'value': 'https://todo-auth-api-h7c6cjghc6ena3da.eastus-01.azurewebsites.net',
+              }
+              {
+                'name': 'TODO_API_ADDRESS',
+                'value': 'https://todos-api-a9apeufvaggbfjda.eastus-01.azurewebsites.net',
+              }
+              {
+                'name': 'ZIPKIN_URL',
+                'value': '$(ZIPKIN_URL)',
+              }
 
   - stage: BuildAndPushLogMessageProcessor
     displayName: Build and Push Log Message Processor Docker Image
@@ -118,10 +153,30 @@ stages:
               tags: |
                 $(Build.BuildId)
               envVars: |
-                REDIS_HOST=redisTODO.redis.cache.windows.net
-                REDIS_PORT=6380
-                REDIS_CHANNEL=log_channel
-                ZIPKIN_URL=$(ZIPKIN_URL)
+              {
+                'name': 'REDIS_PASSWORD',
+                'value': '$(REDIS_PASSWORD)',
+              }
+              {
+                'name': 'JWT_SECRET',
+                'value': 'PRFT',
+              }
+              {
+                'name': 'REDIS_HOST',
+                'value': 'redisTODO.redis.cache.windows.net',
+              }
+              {
+                'name': 'REDIS_PORT',
+                'value': '6379',
+              }
+              {
+                'name': 'REDIS_CHANNEL',
+                'value': 'log_channel',
+              }
+              {
+                'name': 'ZIPKIN_URL',
+                'value': '$(ZIPKIN_URL)',
+              }
 
   - stage: BuildAndPushUsersAPI
     displayName: Build and Push Users API Docker Image
