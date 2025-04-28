@@ -1,0 +1,25 @@
+# azure-pipelines-create-apps.yml
+
+trigger: none
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+  resourceGroupName: 'TallerPipelines'
+  appServicePlan: 'ASP-TallerPipelines-a1bc' 
+  location: 'EastUS' # or whatever region you're using
+
+steps:
+- task: AzureCLI@2
+  inputs:
+    azureSubscription: 'YOUR_AZURE_CONNECTION_NAME'
+    scriptType: 'bash'
+    scriptLocation: 'inlineScript'
+    inlineScript: |
+      az webapp create --resource-group $(resourceGroupName) --plan $(appServicePlan) --name todos-api
+      az webapp create --resource-group $(resourceGroupName) --plan $(appServicePlan) --name todo-auth-api
+      az webapp create --resource-group $(resourceGroupName) --plan $(appServicePlan) --name todo-frontend
+      az webapp create --resource-group $(resourceGroupName) --plan $(appServicePlan) --name log-message-processor
+      az webapp create --resource-group $(resourceGroupName) --plan $(appServicePlan) --name users-api
+  displayName: 'Create App Services'
