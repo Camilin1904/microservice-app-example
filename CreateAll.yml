@@ -1,14 +1,27 @@
-# azure-pipelines-create-apps.yml
-
 trigger: none
 
 pool:
-  vmImage: 'ubuntu-latest'
+  vmImage: ubuntu-latest
 
 variables:
   resourceGroupName: 'TallerPipelines'
-  appServicePlan: 'ASP-TallerPipelines-a1bc' 
-  location: 'EastUS' # or whatever region you're using
+  appServicePlan: 'ASP-TallerPipelines-a1bc'
+  dockerRegistryServiceConnection: 'acr-connection' 
+  location: 'EastUS'
+
+  # App services
+  todosApiName: 'TODOs-API'
+  usersApiName: 'USERS-API'
+  todosAuthApiName: 'TODO-AUTH-API'
+  todosFrontendName: 'TODO-frontend'
+  logProcessorName: 'log-message-processor'
+
+  # Container images
+  todosApiImage: '$(dockerRegistryServiceConnection)/todos-api:latest'
+  usersApiImage: '$(dockerRegistryServiceConnection)/users-api:latest'
+  todosAuthApiImage: '$(dockerRegistryServiceConnection)/auth-api:latest'
+  todosFrontendImage: '$(dockerRegistryServiceConnection)/frontend:latest'
+  logProcessorImage: '$(dockerRegistryServiceConnection)/log-processor:latest'
 
 steps:
 - task: AzureCLI@2
@@ -17,9 +30,36 @@ steps:
     scriptType: 'bash'
     scriptLocation: 'inlineScript'
     inlineScript: |
-      az webapp create --resource-group $(resourceGroupName) --plan $(appServicePlan) --name todos-api
-      az webapp create --resource-group $(resourceGroupName) --plan $(appServicePlan) --name todo-auth-api
-      az webapp create --resource-group $(resourceGroupName) --plan $(appServicePlan) --name todo-frontend
-      az webapp create --resource-group $(resourceGroupName) --plan $(appServicePlan) --name log-message-processor
-      az webapp create --resource-group $(resourceGroupName) --plan $(appServicePlan) --name users-api
-  displayName: 'Create App Services'
+
+      # Create App Services and set container images
+      az webapp create \
+        --resource-group ${{ variables.resourceGroupName }} \
+        --plan ${{ variables.appServicePlan }} \
+        --name ${{ variables.todosApiName }} \
+        --deployment-container-image-name ${{ variables.todosApiImage }}
+
+      az webapp create \
+        --resource-group ${{ variables.resourceGroupName }} \
+        --plan ${{ variables.appServicePlan }} \
+        --name ${{ variables.usersApiName }} \
+        --deployment-container-image-name ${{ variables.usersApiImage }}
+
+      az webapp create \
+        --resource-group ${{ variables.resourceGroupName }} \
+        --plan ${{ variables.appServicePlan }} \
+        --name ${{ variables.todosAuthApiName }} \
+        --deployment-container-image-name ${{ variables.todosAuthApiImage }}
+
+      az webapp create \
+        --resource-group ${{ variables.resourceGroupName }} \
+        --plan ${{ variables.appServicePlan }} \
+        --name ${{ variables.todosFrontendName }} \
+        --deployment-container-image-name ${{ variables.todosFrontendImage }}
+
+      az webapp create \
+        --resource-group ${{ variables.resourceGroupName }} \
+        --plan ${{ variables.appServicePlan }} \
+        --name ${{ variables.logProcessorName }} \
+        --deployment-container-image-name ${{ variables.logProcessorImage }}
+
+  displayName: 'Create App Services with Container Images'
