@@ -63,8 +63,12 @@ stages:
                     "value": "$(ZIPKIN_URL)"
                   },
                   {
-                    "name":"JWT_SECRET",
-                    "value":"PRFT"
+                    "name": "JWT_SECRET",
+                    "value": "PRFT"
+                  },
+                  {
+                    "name": "REDIS_PASSWORD",
+                    "value": "$(REDIS_PASSWORD)"
                   }
                 ]
 
