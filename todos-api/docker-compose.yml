@@ -8,9 +8,11 @@ services:
     environment:
       - JWT_SECRET=PRFT
       - TODO_API_PORT=8082
-      - REDIS_HOST=redis
+      - REDIS_HOST=todo-redis.redis.cache.windows.net
+
       - REDIS_PORT=6379
       - REDIS_CHANNEL=log_channel
+      - ZIPKIN_URL=https://todo-zipkin-gqbcbmezgcbddwat.eastus-01.azurewebsites.net
     networks:
       - microservice-network
 networks:

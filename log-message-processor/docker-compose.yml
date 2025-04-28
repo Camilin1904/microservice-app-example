@@ -4,7 +4,8 @@ services:
       context: .
       dockerfile: Dockerfile
     environment:
-      - REDIS_HOST=redis
+      - REDIS_HOST=todo-redis.redis.cache.windows.net
+
       - REDIS_PORT=6379
       - REDIS_CHANNEL=log_channel
     networks:
