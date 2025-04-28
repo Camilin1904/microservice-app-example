@@ -1,0 +1,23 @@
+# azure-pipelines-delete-apps.yml
+
+trigger: none
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+  resourceGroupName: 'TallerPipelines' # << Set your RG name here
+
+steps:
+- task: AzureCLI@2
+  inputs:
+    azureSubscription: 'PipelineConnection' # Service connection to Azure
+    scriptType: 'bash'
+    scriptLocation: 'inlineScript'
+    inlineScript: |
+      az webapp delete --name todos-api --resource-group $(resourceGroupName)
+      az webapp delete --name todo-auth-api --resource-group $(resourceGroupName)
+      az webapp delete --name todo-frontend --resource-group $(resourceGroupName)
+      az webapp delete --name log-message-processor --resource-group $(resourceGroupName)
+      az webapp delete --name users-api --resource-group $(resourceGroupName)
+  displayName: 'Delete App Services'
