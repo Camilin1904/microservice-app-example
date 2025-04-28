@@ -76,7 +76,7 @@ class TodoController {
                                                                         username: username,
                                                                         todoId: todoId,
                     }), (err, reply) => {
-
+                console.log('publish callback', err, reply)
                 if (err) {
                     if (retriesLeft > 0) {
                         console.warn(`Redis publish failed. Retrying... (${3 - retriesLeft + 1})`);
