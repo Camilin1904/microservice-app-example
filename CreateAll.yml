@@ -13,7 +13,7 @@ variables:
 steps:
 - task: AzureCLI@2
   inputs:
-    azureSubscription: 'YOUR_AZURE_CONNECTION_NAME'
+    azureSubscription: 'PipelineConnection'
     scriptType: 'bash'
     scriptLocation: 'inlineScript'
     inlineScript: |
