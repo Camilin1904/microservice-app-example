@@ -68,6 +68,7 @@ class TodoController {
         })*/
 
         const attemptPublish = (retriesLeft = 3) => {
+            console.log('attemptPublish', retriesLeft)
             const traceId = this._tracer.id;
             this._redisClient.publish(this._logChannel,  JSON.stringify({
                                                                         zipkinSpan: traceId,
