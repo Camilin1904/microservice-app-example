@@ -33,13 +33,37 @@ stages:
               buildContext: todos-api
               tags: |
                 $(Build.BuildId)
-              envVars: |
-                JWT_SECRET=PRFT
-                REDIS_HOST=redisTODO.redis.cache.windows.net
-                REDIS_PORT=6379
-                REDIS_PASSWORD=$(REDIS_PASSWORD)
-                REDIS_CHANNEL=log_channel
-                ZIPKIN_URL=$(ZIPKIN_URL)
+              appSettings: |
+                [
+                  {
+                    "name":"AUTH_API_ADDRESS",
+                    "value":"https://todo-auth-api-h7c6cjghc6ena3da.eastus-01.azurewebsites.net"
+                  },
+                  {
+                    "name":"ZIPKIN_URL",
+                    "value":"$(ZIPKIN_URL)"
+                  },
+                  {
+                    "name":"REDIS_HOST",
+                    "value":"redisTODO.redis.cache.windows.net"
+                  },
+                  {
+                    "name":"REDIS_PASSWORD",
+                    "value":"$(REDIS_PASSWORD)"
+                  },
+                  {
+                    "name":"REDIS_PORT",
+                    "value":"6380"
+                  },
+                  {
+                    "name":"REDIS_CHANNEL",
+                    "value":"log_channel"
+                  },
+                  {
+                    "name": "JWT_SECRET",
+                    "value": "PRFT"
+                  }
+                ]
 
 
   - stage: BuildAndPushAuthAPI
@@ -92,10 +116,21 @@ stages:
               buildContext: frontend
               tags: |
                 $(Build.BuildId)
-              envVars: |
-                AUTH_API_ADDRESS=https://todo-auth-api-h7c6cjghc6ena3da.eastus-01.azurewebsites.net
-                TODOS_API_ADDRESS=https://todos-api-a9apeufvaggbfjda.eastus-01.azurewebsites.net
-                ZIPKIN_URL=$(ZIPKIN_URL)
+              appSettings: |
+                [
+                  {
+                    "name":"TODOS_API_ADDRESS",
+                    "value":"https://todos-api-a9apeufvaggbfjda.eastus-01.azurewebsites.net"
+                  },
+                  {
+                    "name":"AUTH_API_ADDRESS",
+                    "value":"https://todo-auth-api-h7c6cjghc6ena3da.eastus-01.azurewebsites.net"
+                  },
+                  {
+                    "name":"ZIPKIN_URL",
+                    "value":"$(ZIPKIN_URL)"
+                  }
+                ]
 
   - stage: BuildAndPushLogMessageProcessor
     displayName: Build and Push Log Message Processor Docker Image
@@ -120,12 +155,29 @@ stages:
               buildContext: log-message-processor
               tags: |
                 $(Build.BuildId)
-              envVars: |
-                REDIS_HOST=redisTODO.redis.cache.windows.net
-                REDIS_PASSWORD=$(REDIS_PASSWORD)
-                REDIS_PORT=6380
-                REDIS_CHANNEL=log_channel
-                ZIPKIN_URL=$(ZIPKIN_URL)
+              appSettings: |
+                [
+                  {
+                    "name":"REDIS_HOST",
+                    "value":"redisTODO.redis.cache.windows.net"
+                  },
+                  {
+                    "name":"REDIS_PASSWORD",
+                    "value":"$(REDIS_PASSWORD)"
+                  },
+                  {
+                    "name":"REDIS_PORT",
+                    "value":"6380"
+                  },
+                  {
+                    "name":"REDIS_CHANNEL",
+                    "value":"log_channel"
+                  },
+                  {
+                    "name":"ZIPKIN_URL",
+                    "value":"$(ZIPKIN_URL)"
+                  }
+                ]
 
   - stage: BuildAndPushUsersAPI
     displayName: Build and Push Users API Docker Image
@@ -150,8 +202,13 @@ stages:
               buildContext: users-api
               tags: |
                 $(Build.BuildId)
-              envVars: |
-                ZIPKIN_URL=$(ZIPKIN_URL)
+              appSettings: |
+                [
+                  {
+                    "name":"ZIPKIN_URL",
+                    "value":"$(ZIPKIN_URL)"
+                  }
+                ]
 
   - stage: DeployTodosAPI
     displayName: Deploy TODOs API to Azure Web App
